@@ -4,6 +4,8 @@ import dotenv
 import time
 import csv
 import argparse
+import os
+
 #Tải model
 model = YOLO('./weights/best.pt')
 
@@ -33,6 +35,11 @@ prev_time = 0
 
 #Khởi tạo bộ đếm số lượng vật thể
 count_pen = {'ballpoint_pen':set(), 'pencil':set()}
+if not os.path.exists('./csv'):
+    os.makedirs('./csv')
+with open('./csv/inventory_log.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(['ID', 'Class', 'Confidence', 'Timestamp'])
 
 print('Bấm q để thoát màn hình')
 while True:
@@ -82,6 +89,11 @@ while True:
                         text = f"ID:{track_id} {class_name} {conf:.2f}"
                         cv2.putText(frame, text, (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
+                        #Ghi nhận dữ liệu vào file csv
+                        with open('./csv/inventory_log.csv', mode='a', newline='') as file:
+                            writer = csv.writer(file)
+                            writer.writerow([track_id, class_name, conf, time.strftime("%Y-%m-%d %H:%M:%S")])
+
         #Hiển thị số fps trên khung hình
         fps_text = f"FPS: {int(fps)}"
         cv2.putText(frame, fps_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
@@ -106,7 +118,7 @@ cap.release()
 out.release()
 cv2.destroyAllWindows()
 
-#Ghi số lượng vào file csv
+#Ghi lại tổng số lượng vật thể đã đếm vào file csv
 with open('./csv/count_pen.csv', mode='w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(['Class', 'Count'])
