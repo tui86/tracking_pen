@@ -125,3 +125,5 @@ with open('./csv/count_pen.csv', mode='w', newline='') as file:
     writer.writerow(['Class', 'Count'])
     writer.writerow(['Ballpoint Pen', total_ballpoint_pen])
     writer.writerow(['Pencil', total_pencil])
+
+#@tui86
